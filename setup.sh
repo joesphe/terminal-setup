@@ -505,17 +505,19 @@ install_cli_tools_linux() {
         fi
     fi
 
-    # zoxide — not in apt on older Debian/Ubuntu, use curl installer as fallback
+    # zoxide — not in apt on older Debian/Ubuntu, use bundled installer as fallback
     if has_cmd zoxide; then
         success "zoxide already installed"
     else
         info "Installing zoxide..."
         if run_cmd sudo apt-get install -y zoxide 2>/dev/null; then
             success "zoxide installed via apt"
+        elif has_cmd snap && run_cmd sudo snap install zoxide 2>/dev/null; then
+            success "zoxide installed via snap"
         else
-            info "zoxide not in apt, installing via curl..."
-            run_cmd curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-            success "zoxide installed via curl"
+            info "zoxide not in apt/snap, using bundled installer..."
+            run_cmd bash "$SCRIPT_DIR/scripts/install-zoxide.sh"
+            success "zoxide installed via bundled script"
         fi
     fi
 
