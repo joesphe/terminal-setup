@@ -477,7 +477,7 @@ install_cli_tools_macos() {
 
 install_cli_tools_linux() {
     # Tools available directly from apt (on modern Debian/Ubuntu)
-    local APT_TOOLS=(bat fd-find ripgrep btop zoxide jq fzf)
+    local APT_TOOLS=(bat fd-find ripgrep zoxide jq fzf)
 
     for tool in "${APT_TOOLS[@]}"; do
         if dpkg -s "$tool" &>/dev/null 2>&1; then
@@ -488,6 +488,22 @@ install_cli_tools_linux() {
             success "$tool installed"
         fi
     done
+
+    # btop — not in apt on older Debian/Ubuntu, use snap as fallback
+    if has_cmd btop; then
+        success "btop already installed"
+    else
+        info "Installing btop..."
+        if run_cmd sudo apt-get install -y btop 2>/dev/null; then
+            success "btop installed via apt"
+        elif has_cmd snap; then
+            info "btop not in apt, trying snap..."
+            run_cmd sudo snap install btop
+            success "btop installed via snap"
+        else
+            warn "btop not available via apt or snap — skipping (install manually: https://github.com/aristocratos/btop)"
+        fi
+    fi
 
     # bat is installed as 'batcat' on Debian/Ubuntu — create symlink
     if has_cmd batcat && ! has_cmd bat; then
