@@ -55,8 +55,13 @@ fi
 # ─── Zoxide (smart cd) ──────────────────────────────────────────────
 eval "$(zoxide init zsh)"
 
+# fnm binary path
+export PATH="$HOME/.local/share/fnm:$PATH"
+
 # ─── fnm (Node version manager) ─────────────────────────────────────
-eval "$(fnm env --use-on-cd --shell zsh)"
+if command -v fnm &>/dev/null; then
+    eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 # ─── SSH key switcher (fallback for multi-account setups) ────────────
 # Usage: set-ssh-key lewis-official-20260224

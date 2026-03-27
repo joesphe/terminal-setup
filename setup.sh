@@ -842,6 +842,11 @@ else
         if ! grep -qF '.local/share/fnm' "$HOME/.zshrc" 2>/dev/null; then
             sed -i '/# ─── fnm/i # fnm binary path (Linux)\nexport PATH="$HOME/.local/share/fnm:$PATH"\n' "$HOME/.zshrc"
         fi
+
+        # Guard fnm init so shell startup does not fail when fnm is absent
+        sed -i 's|eval "$(fnm env --use-on-cd --shell zsh)"|if command -v fnm \&>/dev/null; then\
+    eval "$(fnm env --use-on-cd --shell zsh)"\
+fi|g' "$HOME/.zshrc"
     fi
     success "Zsh config deployed"
 fi
